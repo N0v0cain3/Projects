@@ -7,6 +7,7 @@ require("dotenv").config();
 const passport = require("passport");
 
 const app = express();
+const userRoutes = require("./api/routes/user");
 
 //===============Database========================
 const dbURI = process.env.mongoUrl;
@@ -29,7 +30,7 @@ app.use(passport.session());
 
 //routes that handle requests
 //=========================================
-
+app.use("/user", userRoutes);
 //=========================================
 
 app.use((req, res, next) => {

@@ -7,6 +7,8 @@ const shortid = require("shortid");
 const nodemailer = require("nodemailer");
 const User = require("../models/user");
 const checkAuth = require("../middleware/checkAuth");
+const { getMaxListeners } = require("../models/user");
+require("dotenv").config();
 
 const router = express.Router();
 
@@ -32,59 +34,58 @@ router.post("/signup", async (req, res, next) => {
 							password: hash,
 							name: req.body.name,
 						});
-						user.save()
-							.then((result) => {
-								user.verifySignup = shortid.generate();
-								user.verifyKeyExpires =
-									new Date().getTime() + 20 * 60 * 1000;
-								user.save()
-									.then(async (result5) => {
-										const msg = {
-											to: req.body.email,
-											from: "tempemail0609@gmail.com",
-											subject: "Test",
-											text: "Gg",
-											html: `
-                    <h1>Hi,</h1>
-                    <h2>Welcome to Kaloory, Thank you for signing up</h2>
-                    <h2>This email contains a email verification key, which you will need to enter in order to confirm your email address, please do not share this key with anyone.</h2>
-                    <h2><code contenteditable="false" style="font-weight:200;font-size:1.5rem;padding:5px 10px; background: #EEEEEE; border:0">${user.verifySignup}</code></h2>
-                    <h2>This signup key is valid for the next 20 minutes</h2>
-                    `,
-										};
-
-										sgMail
-											.send(msg)
-											.then((result) => {
-												console.log("key sent");
-											})
-											.catch((err) => {
-												res.status(500).json({
-													message:
-														"something went wrong",
-													error: err,
-												});
-											});
-									})
-									.catch((err) => {
-										res.status(400).json({
-											message: "Email Error",
-										});
-									});
-								res.status(201).json({
-									message: "User created",
-									studentDetails: {
-										studentId: result._id,
-										email: result.email,
-										name: result.name,
+						user.save().then((result) => {
+							user.verifySignup = shortid.generate();
+							user.verifyKeyExpires =
+								new Date().getTime() + 20 * 60 * 1000;
+							if (!err) {
+								let transporter = nodemailer.createTransport({
+									service: "gmail",
+									port: 465,
+									auth: {
+										user: process.env.email, // your gmail address
+										pass: process.env.password, // your gmail password
 									},
 								});
-							})
-							.catch((err) => {
-								res.status(500).json({
-									error: err,
-								});
-							});
+								let mailOptions = {
+									subject: `CodeChef projects portal verify `,
+									to: "nousernameidea0709@gmail.com",
+									from: `NodeAuthTuts`,
+									html: `
+								  <h1>Hi,</h1>
+								  <h2>This email contains a password reset key, which you will need to enter in order to reset the password, please do not share this key with anyone.</h2>
+								  <h2><code contenteditable="false" style="font-weight:200;font-size:1.5rem;padding:5px 10px; background: #EEEEEE; border:0">${user.verifySignup}</code></h2>
+								  <h2>This password reset key is valid for the next 20 minutes</h2>
+								  <p>Please ignore if you didn't try to reset your password on our platform</p>
+								  `,
+								};
+								try {
+									transporter.sendMail(
+										mailOptions,
+										(error, response) => {
+											if (error) {
+												res.status(500).json({
+													error: error.toString(),
+												});
+											} else {
+												res.status(201).json({
+													message: "User created",
+													userDetails: {
+														userId: result._id,
+														email: result.email,
+														name: result.name,
+													},
+												});
+											}
+										}
+									);
+								} catch (error) {
+									res.status(500).send(
+										"could not sent reset code"
+									);
+								}
+							}
+						});
 					}
 				});
 			}
@@ -95,6 +96,43 @@ router.post("/signup", async (req, res, next) => {
 			});
 		});
 });
+
+// userData.save().then((x) => {
+// 	if (!err) {
+// 		let transporter = nodemailer.createTransport({
+// 			service: "gmail",
+// 			port: 465,
+// 			auth: {
+// 				user: process.env.email, // your gmail address
+// 				pass: process.env.pass, // your gmail password
+// 			},
+// 		});
+// 		let mailOptions = {
+// 			subject: `NodeAuth | Password reset`,
+// 			to: email,
+// 			from: `NodeAuthTuts`,
+// 			html: `
+// 		  <h1>Hi,</h1>
+// 		  <h2>This email contains a password reset key, which you will need to enter in order to reset the password, please do not share this key with anyone.</h2>
+// 		  <h2><code contenteditable="false" style="font-weight:200;font-size:1.5rem;padding:5px 10px; background: #EEEEEE; border:0">${userData.passResetKey}</code></h2>
+// 		  <h2>This password reset key is valid for the next 20 minutes</h2>
+// 		  <p>Please ignore if you didn't try to reset your password on our platform</p>
+// 		  `,
+// 		};
+// 		try {
+// 			transporter.sendMail(mailOptions, (error, response) => {
+// 				if (error) {
+// 					res.status(500).send("could not send reset code");
+// 				} else {
+// 					res.status(200).send("Reset Code sent");
+// 				}
+// 			});
+// 		} catch (error) {
+// 			res.status(500).send("could not sent reset code");
+// 		}
+// 	}
+// });
+
 router.post("/login", async (req, res) => {
 	User.find({ email: req.body.email })
 		.exec()

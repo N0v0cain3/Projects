@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const Poll = require("./poll");
 const userSchema = mongoose.Schema({
 	_id: mongoose.Schema.Types.ObjectId,
 	name: { type: String, required: true },
@@ -16,7 +15,7 @@ const userSchema = mongoose.Schema({
 		type: String,
 	},
 	regNo: { type: String },
-	isVerified: { type: Boolean, default: true },
+	isVerified: { type: Boolean, default: false },
 	passResetKey: String,
 	passKeyExpires: Number,
 	verifySignup: String,
