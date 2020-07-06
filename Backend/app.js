@@ -4,11 +4,12 @@ const bodyParser = require("body-parser");
 var cors = require("cors");
 require("dotenv").config();
 
+const passportSetup = require("./api/config/passportSetupGoogle");
 const passport = require("passport");
 
 const app = express();
 const userRoutes = require("./api/routes/user");
-
+const authRoutes = require("./api/routes/auth");
 //===============Database========================
 const dbURI = process.env.mongoUrl;
 
@@ -27,10 +28,11 @@ app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
 //===============================================
-
+mongoose.Promise = global.Promise;
 //routes that handle requests
 //=========================================
 app.use("/user", userRoutes);
+app.use("/auth", authRoutes);
 //=========================================
 
 app.use((req, res, next) => {
