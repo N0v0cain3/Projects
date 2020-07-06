@@ -1,24 +1,31 @@
 const mongoose = require("mongoose");
-const userSchema = mongoose.Schema({
+const User = require("./user");
+const projectSchema = mongoose.Schema({
 	_id: mongoose.Schema.Types.ObjectId,
-	name: { type: String, required: true },
-
-	email: {
-		type: String,
-		required: true,
-		unique: true,
-		match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
+	tags: [
+		{
+			tag: { type: String },
+		},
+	],
+	title: { type: String },
+	description: { type: String },
+	upvote: {
+		count: { type: Number },
+		user: [
+			{
+				type: mongoose.Schema.Types.ObjectID,
+				ref: "User",
+			},
+		],
 	},
-	password: { type: String },
-
-	profileImage: {
-		type: String,
-	},
-	passResetKey: String,
-	passKeyExpires: Number,
-	isVerified: Boolean,
-	avatar: {
-		type: String,
+	downvote: {
+		count: { type: Number },
+		user: [
+			{
+				type: mongoose.Schema.Types.ObjectID,
+				ref: "User",
+			},
+		],
 	},
 });
 
