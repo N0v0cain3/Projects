@@ -32,4 +32,4 @@ const ideaSchema = mongoose.Schema({
 	},
 });
 
-module.exports = mongoose.model("Idea", userSchema);
+module.exports = mongoose.model("Idea", ideaSchema);
