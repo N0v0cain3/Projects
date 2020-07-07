@@ -2,14 +2,10 @@ const mongoose = require("mongoose");
 const User = require("./user");
 const projectSchema = mongoose.Schema({
 	_id: mongoose.Schema.Types.ObjectId,
-	tags: [
-		{
-			tag: { type: String },
-		},
-	],
+	tags: [{ type: String }],
 	title: { type: String },
 	description: { type: String },
-	ideaBy: { type: mongoose.Schema.Types.ObjectID, ref: "User" },
+	ideaBy: { type: String },
 	timeline: {
 		start: {
 			type: Number,
@@ -28,6 +24,11 @@ const projectSchema = mongoose.Schema({
 			default: Date.now() * 30 * 24 * 60 * 60 * 1000,
 		},
 	},
+	mentors: [
+		{
+			type: String,
+		},
+	],
 });
 
 module.exports = mongoose.model("Project", projectSchema);

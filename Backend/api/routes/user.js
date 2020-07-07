@@ -7,7 +7,7 @@ const shortid = require("shortid");
 const nodemailer = require("nodemailer");
 const User = require("../models/user");
 const checkAuth = require("../middleware/checkAuth");
-const { getMaxListeners } = require("../models/user");
+
 require("dotenv").config();
 
 const router = express.Router();
@@ -16,10 +16,12 @@ router.patch("/checkCC", checkAuth, async (req, res) => {
 	if (req.body.key == process.env.cckey) {
 		console.log(req.user);
 		await User.updateOne({ _id: req.user.userId }, { $set: { isCC: true } })
-			.then((result) => {
-				res.status(200).json({
-					message: "Added successfully",
-				});
+			.then(async (result) => {
+				await User.findOne({ _id: req.user.userId })
+					.then((result1) => res.status(200).json({ result1 }))
+					.catch((err) => {
+						error: err.toString();
+					});
 			})
 			.catch((err) => {
 				res.status(500).json({
