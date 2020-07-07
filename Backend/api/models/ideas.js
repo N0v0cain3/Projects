@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const User = require("./user");
-const projectSchema = mongoose.Schema({
+const ideaSchema = mongoose.Schema({
 	_id: mongoose.Schema.Types.ObjectId,
 	tags: [
 		{
@@ -27,6 +27,9 @@ const projectSchema = mongoose.Schema({
 			},
 		],
 	},
+	createdBy: {
+		type: mongoose.Schema.Types.ObjectID,
+	},
 });
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("Idea", userSchema);
