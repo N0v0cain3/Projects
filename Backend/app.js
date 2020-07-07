@@ -10,6 +10,8 @@ const passport = require("passport");
 const app = express();
 const userRoutes = require("./api/routes/user");
 const authRoutes = require("./api/routes/auth");
+const ideaRoutes = require("./api/routes/ideas");
+const projectRoutes = require("./api/routes/projects");
 //===============Database========================
 const dbURI = process.env.mongoUrl;
 
@@ -33,6 +35,8 @@ mongoose.Promise = global.Promise;
 //=========================================
 app.use("/user", userRoutes);
 app.use("/auth", authRoutes);
+app.use("/projects", projectRoutes);
+app.use("/idea", ideaRoutes);
 //=========================================
 
 app.use((req, res, next) => {

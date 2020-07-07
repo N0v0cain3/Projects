@@ -7,5 +7,6 @@ const shortid = require("shortid");
 const nodemailer = require("nodemailer");
 const User = require("../models/user");
 const checkAuth = require("../middleware/checkAuth");
-const { getMaxListeners } = require("../models/user");
 require("dotenv").config();
+const router = express.Router();
+module.exports = router;

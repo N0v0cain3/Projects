@@ -8,10 +8,10 @@ module.exports = function (req, res, next) {
 		const verified = JWT.verify(token, process.env.jwtSecret);
 
 		req.user = verified;
-
+		console.log(req.user, verified);
 		next();
-		// console.log("next");
+		// console.log(next);
 	} catch (err) {
-		res.status(400).send({ error: "auth failed, check auth-token222" });
+		res.status(400).send({ error: err.toString() });
 	}
 };

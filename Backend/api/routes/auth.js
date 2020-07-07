@@ -18,8 +18,11 @@ router.get(
 		const x = req.user;
 		var token = encodeURIComponent(req.user.token);
 		var name = encodeURIComponent(req.user.name);
-		res.send(req.user);
-		res.redirect(303, "https://www.google.com" + name + "&token=" + token);
+		//res.send(req.user);
+		res.redirect(
+			303,
+			"https://google.com/?name=" + name + "&token=" + token
+		);
 	}
 );
 module.exports = router;
