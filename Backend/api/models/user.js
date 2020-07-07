@@ -13,6 +13,14 @@ const userSchema = mongoose.Schema({
 	avatar: {
 		type: String,
 	},
+	isCC: {
+		type: Boolean,
+		default: false,
+	},
+	isModerator: {
+		type: Boolean,
+		default: false,
+	},
 });
 
 module.exports = mongoose.model("User", userSchema);
