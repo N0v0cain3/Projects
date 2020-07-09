@@ -8,7 +8,7 @@ const ideaSchema = mongoose.Schema({
 		},
 	],
 	title: { type: String },
-	description: { type: String },
+	description: { type: String, default: 0 },
 	upvote: {
 		count: { type: Number },
 		user: [
@@ -19,7 +19,7 @@ const ideaSchema = mongoose.Schema({
 		],
 	},
 	downvote: {
-		count: { type: Number },
+		count: { type: Number, default: 0 },
 		user: [
 			{
 				type: mongoose.Schema.Types.ObjectID,
@@ -27,9 +27,8 @@ const ideaSchema = mongoose.Schema({
 			},
 		],
 	},
-	createdBy: {
-		type: mongoose.Schema.Types.ObjectID,
-	},
+
+	ideaBy: { type: String },
 });
 
 module.exports = mongoose.model("Idea", ideaSchema);

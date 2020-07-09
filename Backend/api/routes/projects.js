@@ -10,6 +10,7 @@ const Project = require("../models/projects");
 const checkAuth = require("../middleware/checkAuth");
 const checkAuthMod = require("../middleware/checkAuthMod");
 const checkAuthCC = require("../middleware/checkAuthCC");
+const projects = require("../models/projects");
 const router = express.Router();
 require("dotenv").config();
 
@@ -46,6 +47,24 @@ router.post("/add", checkAuth, checkAuthMod, async (req, res) => {
 			},
 		});
 	});
+});
+
+router.delete("/delete", checkAuth, checkAuthMod, async (req, res) => {
+	Project.deleteOne({ _id: req.body.projectId })
+		.then((result) => {
+			res.status(204).json({ message: "Succesfully Deleted" });
+		})
+		.catch((err) => {
+			res.status(500).json({ error: err.toString() });
+		});
+});
+
+router.get("/all", async (req, res) => {
+	Project.find()
+		.then((result) => {
+			res.status(200).json({ result });
+		})
+		.catch((err) => res.status(400).json({ error: err.toString() }));
 });
 
 module.exports = router;
