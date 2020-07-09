@@ -29,6 +29,7 @@ const projectSchema = mongoose.Schema({
 			type: String,
 		},
 	],
+	github: { type: String, default: "https://github.com/CodeChefVIT" },
 });
 
 module.exports = mongoose.model("Project", projectSchema);

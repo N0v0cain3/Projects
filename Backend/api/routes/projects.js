@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const multer = require("multer");
 const shortid = require("shortid");
+const fetch = require("node-fetch");
 const nodemailer = require("nodemailer");
 const User = require("../models/user");
 const Project = require("../models/projects");
@@ -24,12 +25,14 @@ router.post("/add", checkAuth, checkAuthMod, async (req, res) => {
 	const review2 = req.body.review2;
 	const review3 = req.body.review3;
 	const tags = req.body.tags;
+	const github = req.body.github;
 
 	const project = new Project({
 		_id: new mongoose.Types.ObjectId(),
 		title,
 		description,
 		mentors,
+		github,
 		timeline: { start, review1, review2, review3 },
 		ideaBy,
 		tags,
