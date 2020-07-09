@@ -56,6 +56,9 @@ app.use((error, req, res, next) => {
 
 const PORT = process.env.PORT || 3000;
 
+console.log(Number(Date.now()) + Number(10 * 24 * 60 * 60 * 1000));
+// var date = new Date(1594989162860);
+// console.log(date.toLocaleString());
 app.listen(PORT, () => {
 	console.log(`Listening on port ${PORT}`);
 });

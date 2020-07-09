@@ -13,15 +13,15 @@ const projectSchema = mongoose.Schema({
 		},
 		review1: {
 			type: Number,
-			default: Date.now() * 10 * 24 * 60 * 60 * 1000,
+			default: Date.now() + 10 * 24 * 60 * 60 * 1000,
 		},
 		review2: {
 			type: Number,
-			default: Date.now() * 20 * 24 * 60 * 60 * 1000,
+			default: Date.now() + 20 * 24 * 60 * 60 * 1000,
 		},
 		review3: {
 			type: Number,
-			default: Date.now() * 30 * 24 * 60 * 60 * 1000,
+			default: Date.now() + 30 * 24 * 60 * 60 * 1000,
 		},
 	},
 	mentors: [
@@ -29,6 +29,7 @@ const projectSchema = mongoose.Schema({
 			type: String,
 		},
 	],
+	github: { type: String, default: "https://github.com/CodeChefVIT" },
 });
 
 module.exports = mongoose.model("Project", projectSchema);
