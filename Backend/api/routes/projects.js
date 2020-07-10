@@ -15,6 +15,21 @@ const projects = require("../models/projects");
 const router = express.Router();
 require("dotenv").config();
 
+router.get("/", async (req, res) => {
+	const response = await fetch(
+		`https://api.github.com/repos/CodeChefVIT/resources/topics`
+		// `https://api.github.com/repos/N0v0cain3/ZWIGGY/traffic/views`
+	);
+	let tags = [];
+	const data = await response.json();
+	console.log(data);
+	for (var i = 0; i < data.length; i++) {
+		console.log(data);
+		//commits.push(tags[i].commit.message);
+	}
+	res.status(200).json(tags);
+});
+
 router.post("/add", checkAuth, checkAuthMod, async (req, res) => {
 	const title = req.body.title;
 	const ideaBy = req.body.ideaBy;
@@ -24,9 +39,18 @@ router.post("/add", checkAuth, checkAuthMod, async (req, res) => {
 	const review1 = req.body.review1;
 	const review2 = req.body.review2;
 	const review3 = req.body.review3;
-	const tags = req.body.tags;
+	//const tags = req.body.tags;
 	const github = req.body.github;
 	const repo = req.body.repo;
+
+	const response = await fetch(
+		`https://api.github.com/repos/CodeChefVIT/${repo}/topics`
+	);
+	let tags = [];
+	const data = await response.json();
+	for (var i = 0; i < data.length; i++) {
+		commits.push(tags[i].commit.message);
+	}
 
 	const project = new Project({
 		_id: new mongoose.Types.ObjectId(),
