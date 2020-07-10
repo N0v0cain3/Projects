@@ -56,4 +56,25 @@ router.get("/all", async (req, res) => {
 		.catch((err) => res.status(400).json({ error: err.toString() }));
 });
 
+//update idea
+
+router.patch("/update/:ideaId", async (req, res, next) => {
+	const id = req.params.ideaId;
+	const updateOps = {};
+	var flag = 0;
+
+	Project.updateOne({ _id: id }, { $set: req.body })
+		.exec()
+		.then((result) => {
+			res.status(200).json({
+				message: "Ideas updated",
+			});
+		})
+		.catch((err) => {
+			res.status(500).json({
+				error: err,
+			});
+		});
+});
+
 module.exports = router;

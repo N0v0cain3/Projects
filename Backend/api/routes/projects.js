@@ -4,8 +4,8 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const multer = require("multer");
 const shortid = require("shortid");
-const fetch = require("node-fetch");
 const nodemailer = require("nodemailer");
+const fetch = require("node-fetch");
 const User = require("../models/user");
 const Project = require("../models/projects");
 const checkAuth = require("../middleware/checkAuth");
@@ -26,6 +26,7 @@ router.post("/add", checkAuth, checkAuthMod, async (req, res) => {
 	const review3 = req.body.review3;
 	const tags = req.body.tags;
 	const github = req.body.github;
+	const repo = req.body.repo;
 
 	const project = new Project({
 		_id: new mongoose.Types.ObjectId(),
@@ -36,6 +37,8 @@ router.post("/add", checkAuth, checkAuthMod, async (req, res) => {
 		timeline: { start, review1, review2, review3 },
 		ideaBy,
 		tags,
+		github,
+		repo,
 	});
 	project.save().then((result) => {
 		res.status(201).json({
@@ -47,6 +50,8 @@ router.post("/add", checkAuth, checkAuthMod, async (req, res) => {
 				timeline: result.timeline,
 				ideaBy: result.ideaBy,
 				tags: result.tags,
+				repo: result.repo,
+				github: result.github,
 			},
 		});
 	});
@@ -66,6 +71,44 @@ router.get("/all", async (req, res) => {
 	Project.find()
 		.then((result) => {
 			res.status(200).json({ result });
+		})
+		.catch((err) => res.status(400).json({ error: err.toString() }));
+});
+
+//update project
+router.patch("/update/:projectId", async (req, res, next) => {
+	const id = req.params.projectId;
+	const updateOps = {};
+	var flag = 0;
+
+	Project.updateOne({ _id: id }, { $set: req.body })
+		.exec()
+		.then((result) => {
+			res.status(200).json({
+				message: "Project updated",
+			});
+		})
+		.catch((err) => {
+			res.status(500).json({
+				error: err,
+			});
+		});
+});
+
+//get commits of a repo
+router.get("/commits/:projectId", async (req, res) => {
+	Project.findById(req.params.projectId)
+		.then(async (result) => {
+			const response = await fetch(
+				`https://api.github.com/repos/CodeChefVIT/${result.repo}/commits`
+			);
+			let commits = [];
+			const data = await response.json();
+			for (var i = 0; i < data.length; i++) {
+				commits.push(data[i].commit.message);
+			}
+
+			res.status(200).json(commits);
 		})
 		.catch((err) => res.status(400).json({ error: err.toString() }));
 });
