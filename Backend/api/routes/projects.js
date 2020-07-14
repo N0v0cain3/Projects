@@ -16,15 +16,6 @@ const router = express.Router();
 require("dotenv").config();
 
 router.get("/", async (req, res) => {
-	// fetch(`https://api.github.com/repos/CodeChefVit/Common-Entry-Test/`, {
-	// 	method: "get",
-	// 	headers: {
-	// 		"Content-Type": "application/json",
-	// 		Authorization: `token ${process.env.githubCCBot}`,
-	// 		Accept: "application/vnd.github.machine-man-preview",
-	// 	},
-	// }).then((result) => res.status(200).json({ result }));
-
 	fetch(`https://api.github.com/repos/CodeChefVit/Projects`, {
 		method: "get",
 		headers: {
@@ -34,36 +25,19 @@ router.get("/", async (req, res) => {
 	})
 		.then((res) => res.json())
 		.then((json) => {
-			const issues = [];
-			//json.forEach((repo) => {
-			fetch(`https://api.github.com/repos/CodeChefVit/Projects/issues`, {
-				method: "get",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `token ${process.env.githubCCBot}`,
-				},
-			})
-				.then((res) => res.json())
-				.then((json) => {
-					issues.push(JSON.stringify(json));
-				});
-			//	});
 			res.status(200).json({
-				issues: json,
+				json,
 			});
 		});
-	// const response = await fetch(
-	// 	`https://api.github.com/repos/CodeChefVIT/resources/topics`
-	// 	// `https://api.github.com/repos/N0v0cain3/ZWIGGY/traffic/views`
-	// );
-	// let tags = [];
-	// const data = await response.json();
-	// console.log(data);
-	// for (var i = 0; i < data.length; i++) {
-	// 	console.log(data);
-	// 	//commits.push(tags[i].commit.message);
-	// }
-	// res.status(200).json(tags);
+
+	//		issue:json.open_issues_count
+	//description:json.description
+	//    "created_at": "2020-07-05T12:23:15Z",
+	//	  "updated_at": "2020-07-12T17:40:14Z",
+	//	  "pushed_at": "2020-07-12T17:40:11Z",
+	//"language": "JavaScript",
+	//"git_url": "git://github.com/CodeChefVIT/Projects.git",
+	//
 });
 
 router.post("/add", checkAuth, checkAuthMod, async (req, res) => {
