@@ -19,10 +19,15 @@ router.get(
 		var token = encodeURIComponent(req.user.token);
 		var name = encodeURIComponent(req.user.name);
 		//res.send(req.user);
-		res.redirect(
-			303,
-			"https://google.com/?name=" + name + "&token=" + token
-		);
+		// res.redirect(
+		// 	303,
+		// 	"https://google.com/?name=" + name + "&token=" + token
+		// );
+		res.status(200).json({
+			success: true,
+			token: token,
+			name: name
+		})
 	}
 );
 module.exports = router;
