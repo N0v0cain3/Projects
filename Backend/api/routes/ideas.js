@@ -60,7 +60,6 @@ router.get("/all", async (req, res) => {
 
 router.patch("/update/:ideaId", async (req, res, next) => {
 	const id = req.params.ideaId;
-	const updateOps = {};
 	var flag = 0;
 
 	Project.updateOne({ _id: id }, { $set: req.body })

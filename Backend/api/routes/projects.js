@@ -16,22 +16,59 @@ const router = express.Router();
 require("dotenv").config();
 
 router.get("/", async (req, res) => {
-	const response = await fetch(
-		`https://api.github.com/repos/CodeChefVIT/resources/topics`
-		// `https://api.github.com/repos/N0v0cain3/ZWIGGY/traffic/views`
-	);
-	let tags = [];
-	const data = await response.json();
-	console.log(data);
-	for (var i = 0; i < data.length; i++) {
-		console.log(data);
-		//commits.push(tags[i].commit.message);
-	}
-	res.status(200).json(tags);
+	// fetch(`https://api.github.com/repos/CodeChefVit/Common-Entry-Test/`, {
+	// 	method: "get",
+	// 	headers: {
+	// 		"Content-Type": "application/json",
+	// 		Authorization: `token ${process.env.githubCCBot}`,
+	// 		Accept: "application/vnd.github.machine-man-preview",
+	// 	},
+	// }).then((result) => res.status(200).json({ result }));
+
+	fetch(`https://api.github.com/repos/CodeChefVit/Projects`, {
+		method: "get",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `${process.env.githubCCBot}`,
+		},
+	})
+		.then((res) => res.json())
+		.then((json) => {
+			const issues = [];
+			//json.forEach((repo) => {
+			fetch(`https://api.github.com/repos/CodeChefVit/Projects/issues`, {
+				method: "get",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `token ${process.env.githubCCBot}`,
+				},
+			})
+				.then((res) => res.json())
+				.then((json) => {
+					issues.push(JSON.stringify(json));
+				});
+			//	});
+			res.status(200).json({
+				issues: json,
+			});
+		});
+	// const response = await fetch(
+	// 	`https://api.github.com/repos/CodeChefVIT/resources/topics`
+	// 	// `https://api.github.com/repos/N0v0cain3/ZWIGGY/traffic/views`
+	// );
+	// let tags = [];
+	// const data = await response.json();
+	// console.log(data);
+	// for (var i = 0; i < data.length; i++) {
+	// 	console.log(data);
+	// 	//commits.push(tags[i].commit.message);
+	// }
+	// res.status(200).json(tags);
 });
 
 router.post("/add", checkAuth, checkAuthMod, async (req, res) => {
 	const title = req.body.title;
+	const team = req.body.team;
 	const ideaBy = req.body.ideaBy;
 	const description = req.body.description;
 	const mentors = req.body.mentors;
@@ -40,16 +77,16 @@ router.post("/add", checkAuth, checkAuthMod, async (req, res) => {
 	const review2 = req.body.review2;
 	const review3 = req.body.review3;
 	//const tags = req.body.tags;
-	const github = req.body.github;
-	const repo = req.body.repo;
 
+	const repo = req.body.repo;
+	const github = `https://api.github.com/repos/CodeChefVIT/${repo}`;
 	const response = await fetch(
-		`https://api.github.com/repos/CodeChefVIT/${repo}/topics`
+		`https://api.github.com/repos/CodeChefVIT/${repo}/commits`
 	);
-	let tags = [];
+
 	const data = await response.json();
 	for (var i = 0; i < data.length; i++) {
-		commits.push(tags[i].commit.message);
+		console.log(data[i].commit.message);
 	}
 
 	const project = new Project({
@@ -61,8 +98,9 @@ router.post("/add", checkAuth, checkAuthMod, async (req, res) => {
 		timeline: { start, review1, review2, review3 },
 		ideaBy,
 		tags,
-		github,
+		commits,
 		repo,
+		team,
 	});
 	project.save().then((result) => {
 		res.status(201).json({
@@ -93,6 +131,7 @@ router.delete("/delete", checkAuth, checkAuthMod, async (req, res) => {
 
 router.get("/all", async (req, res) => {
 	Project.find()
+		.populate({ path: "team" })
 		.then((result) => {
 			res.status(200).json({ result });
 		})
