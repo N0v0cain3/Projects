@@ -116,15 +116,70 @@ router.delete("/delete", checkAuth, checkAuthMod, async (req, res) => {
 
 router.get("/:projectId", async (req, res) => {
 	Project.findById(req.params.projectId)
-		.then((result) => {
+		.then((project) => {
 			res.status(200).json({ result });
+		})
+		.catch((err) => res.status(400).json({ error: err.toString() }));
+});
+
+//get team
+router.get("/:projectId/team", async (rew, res) => {
+	let name = [];
+	Project.findById(req.params.projectId)
+		.then((project) => {
+			for (var i = 0; i < project.team.length; i++) {
+				User.findOne({ reg: project.team[i] })
+					.then((result) => {
+						name.push(result.name);
+					})
+					.catch((err) =>
+						res.status(400).json({ error: err.toString() })
+					);
+			}
+			if (name) {
+				res.status(200).json({
+					name,
+				});
+			} else {
+				res.status(404).json({
+					message: "Not found",
+				});
+			}
+		})
+		.catch((err) => res.status(400).json({ error: err.toString() }));
+});
+
+//get mentors
+
+router.get("/:projectId/mentors", async (rew, res) => {
+	let name = [];
+	Project.findById(req.params.projectId)
+		.then((project) => {
+			for (var i = 0; i < project.mentors.length; i++) {
+				User.findOne({ reg: project.mentors[i] })
+					.then((result) => {
+						name.push(result.name);
+					})
+					.catch((err) =>
+						res.status(400).json({ error: err.toString() })
+					);
+			}
+			if (name) {
+				res.status(200).json({
+					name,
+				});
+			} else {
+				res.status(404).json({
+					message: "Not found",
+				});
+			}
 		})
 		.catch((err) => res.status(400).json({ error: err.toString() }));
 });
 
 router.get("/all", async (req, res) => {
 	Project.find()
-		.populate({ path: "team" })
+
 		.then((result) => {
 			res.status(200).json({ result });
 		})
@@ -167,6 +222,64 @@ router.get("/commits/:projectId", async (req, res) => {
 			res.status(200).json(commits);
 		})
 		.catch((err) => res.status(400).json({ error: err.toString() }));
+});
+
+router.post("/:projectId/reminder", async (req, res) => {
+	const recipientEmails = [];
+	const recipientNames = [];
+	Project.findById(req.params.projectId)
+		.then((project) => {
+			for (var i = 0; i < project.team.length; i++) {
+				User.findOne({ reg: project.team[i] })
+					.then((result) => {
+						recipientEmails.push(result.email);
+						recipientNames.push(result.name);
+					})
+					.catch((err) =>
+						res.status(400).json({ error: err.toString() })
+					);
+			}
+			if (!recipientNames) {
+				res.status(404).json({
+					message: "Not found",
+				});
+			}
+		})
+		.catch((err) => res.status(400).json({ error: err.toString() }));
+
+	const numRecipients = recipientEmails.length;
+
+	for (var i = 0; i < numRecipients; i++) {
+		let transporter = nodemailer.createTransport({
+			service: "gmail",
+			port: 465,
+			auth: {
+				user: process.env.email, // your gmail address
+				pass: process.env.pass, // your gmail password
+			},
+		});
+		let mailOptions = {
+			subject: `Project Reminder`,
+			to: recipientEmails[i],
+			from: `CodeChef-VIT`,
+			html: `
+					<h1>${recipientNames[i]}</h1>
+					<h2>Reminder for the project bitch</h2>
+                  `,
+		};
+		try {
+			transporter.sendMail(mailOptions, (error, response) => {
+				if (error) {
+					//res.status(500).json("could not send ");
+					console.log("fail ", mailOptions.to);
+				} else {
+					console.log("gg", mailOptions.to);
+				}
+			});
+		} catch (error) {
+			res.status(500).send("could not send");
+		}
+	}
 });
 
 module.exports = router;
