@@ -21,6 +21,7 @@ router.get("/", async (req, res) => {
 		headers: {
 			"Content-Type": "application/json",
 			Authorization: `${process.env.githubCCBot}`,
+			"Bearer Token": `${process.env.githubCCBot}`,
 		},
 	})
 		.then((res) => res.json())
@@ -43,7 +44,7 @@ router.get("/", async (req, res) => {
 router.post("/add", async (req, res) => {
 	//checkAuth checkAuthMod
 	const title = req.body.title;
-	//const team = req.body.team;
+	const team = req.body.team;
 	const ideaBy = req.body.ideaBy;
 	//const description = req.body.description;
 	const mentors = req.body.mentors;
@@ -53,7 +54,6 @@ router.post("/add", async (req, res) => {
 	const review3 = req.body.review3;
 	const repo = req.body.repo;
 	//const tags = req.body.tags;
-	let commits = [];
 
 	fetch(`https://api.github.com/repos/CodeChefVit/${repo}`, {
 		method: "get",
@@ -68,9 +68,6 @@ router.post("/add", async (req, res) => {
 		});
 
 	const github = `https://github.com/CodeChefVit/${repo}`;
-	const response = await fetch(
-		`https://api.github.com/repos/CodeChefVIT/${repo}/commits`
-	);
 
 	const data = await response.json();
 	for (var i = 0; i < data.length; i++) {
@@ -87,9 +84,9 @@ router.post("/add", async (req, res) => {
 		timeline: { start, review1, review2, review3 },
 		ideaBy,
 		//		tags,
-		commits,
+
 		repo,
-		//team,
+		team,
 	});
 	project.save().then((result) => {
 		res.status(201).json({
@@ -116,15 +113,74 @@ router.delete("/delete", checkAuth, checkAuthMod, async (req, res) => {
 
 router.get("/:projectId", async (req, res) => {
 	Project.findById(req.params.projectId)
-		.then((result) => {
-			res.status(200).json({ result });
+		.then(async (project) => {
+			const repo = project.repo;
+			const response = await fetch(
+				`https://api.github.com/repos/CodeChefVIT/${repo}/commits`
+			);
+			res.status(200).json({ project, commit: response });
+		})
+		.catch((err) => res.status(400).json({ error: err.toString() }));
+});
+
+//get team
+router.get("/:projectId/team", async (rew, res) => {
+	let name = [];
+	Project.findById(req.params.projectId)
+		.then((project) => {
+			for (var i = 0; i < project.team.length; i++) {
+				User.findOne({ reg: project.team[i] })
+					.then((result) => {
+						name.push(result.name);
+					})
+					.catch((err) =>
+						res.status(400).json({ error: err.toString() })
+					);
+			}
+			if (name) {
+				res.status(200).json({
+					name,
+				});
+			} else {
+				res.status(404).json({
+					message: "Not found",
+				});
+			}
+		})
+		.catch((err) => res.status(400).json({ error: err.toString() }));
+});
+
+//get mentors
+
+router.get("/:projectId/mentors", async (rew, res) => {
+	let name = [];
+	Project.findById(req.params.projectId)
+		.then((project) => {
+			for (var i = 0; i < project.mentors.length; i++) {
+				User.findOne({ reg: project.mentors[i] })
+					.then((result) => {
+						name.push(result.name);
+					})
+					.catch((err) =>
+						res.status(400).json({ error: err.toString() })
+					);
+			}
+			if (name) {
+				res.status(200).json({
+					name,
+				});
+			} else {
+				res.status(404).json({
+					message: "Not found",
+				});
+			}
 		})
 		.catch((err) => res.status(400).json({ error: err.toString() }));
 });
 
 router.get("/all", async (req, res) => {
 	Project.find()
-		.populate({ path: "team" })
+
 		.then((result) => {
 			res.status(200).json({ result });
 		})
@@ -167,6 +223,66 @@ router.get("/commits/:projectId", async (req, res) => {
 			res.status(200).json(commits);
 		})
 		.catch((err) => res.status(400).json({ error: err.toString() }));
+});
+
+router.post("/:projectId/reminder", async (req, res) => {
+	const recipientEmails = [];
+	const recipientNames = [];
+	const message = req.body.message;
+	Project.findById(req.params.projectId)
+		.then((project) => {
+			for (var i = 0; i < project.team.length; i++) {
+				User.findOne({ reg: project.team[i] })
+					.then((result) => {
+						recipientEmails.push(result.email);
+						recipientNames.push(result.name);
+					})
+					.catch((err) =>
+						res.status(400).json({ error: err.toString() })
+					);
+			}
+			if (!recipientNames) {
+				res.status(404).json({
+					message: "Not found",
+				});
+			}
+		})
+		.catch((err) => res.status(400).json({ error: err.toString() }));
+
+	const numRecipients = recipientEmails.length;
+
+	for (var i = 0; i < numRecipients; i++) {
+		let transporter = nodemailer.createTransport({
+			service: "gmail",
+			port: 465,
+			auth: {
+				user: process.env.email, // your gmail address
+				pass: process.env.pass, // your gmail password
+			},
+		});
+		let mailOptions = {
+			subject: `Project Reminder`,
+			to: recipientEmails[i],
+			from: `CodeChef-VIT`,
+			html: `
+					<h1>${recipientNames[i]}</h1>
+					<h2>Reminder for the project bitch</h2>
+					${message}
+                  `,
+		};
+		try {
+			transporter.sendMail(mailOptions, (error, response) => {
+				if (error) {
+					//res.status(500).json("could not send ");
+					console.log("fail ", mailOptions.to);
+				} else {
+					console.log("gg", mailOptions.to);
+				}
+			});
+		} catch (error) {
+			res.status(500).send("could not send");
+		}
+	}
 });
 
 module.exports = router;

@@ -21,6 +21,10 @@ const userSchema = mongoose.Schema({
 		type: Boolean,
 		default: false,
 	},
+	reg: {
+		type: String,
+		default: "NA",
+	},
 });
 
 module.exports = mongoose.model("User", userSchema);

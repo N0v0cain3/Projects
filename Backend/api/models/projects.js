@@ -31,13 +31,12 @@ const projectSchema = mongoose.Schema({
 	],
 	github: { type: String, default: "https://github.com/CodeChefVIT" },
 	repo: { type: String },
-	team: [{
-		type: mongoose.Schema.Types.ObjectID,
-		ref: "User",
-	}],
+	team: [
+		{
+			type: String,
+		},
+	],
 	notification: { type: Number },
-	commits: [{ type: String }]
-
 });
 
 module.exports = mongoose.model("Project", projectSchema);
