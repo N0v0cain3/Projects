@@ -21,6 +21,7 @@ router.get("/", async (req, res) => {
 		headers: {
 			"Content-Type": "application/json",
 			Authorization: `${process.env.githubCCBot}`,
+			"Bearer Token": `${process.env.githubCCBot}`,
 		},
 	})
 		.then((res) => res.json())
@@ -43,7 +44,7 @@ router.get("/", async (req, res) => {
 router.post("/add", async (req, res) => {
 	//checkAuth checkAuthMod
 	const title = req.body.title;
-	//const team = req.body.team;
+	const team = req.body.team;
 	const ideaBy = req.body.ideaBy;
 	//const description = req.body.description;
 	const mentors = req.body.mentors;
@@ -53,7 +54,6 @@ router.post("/add", async (req, res) => {
 	const review3 = req.body.review3;
 	const repo = req.body.repo;
 	//const tags = req.body.tags;
-	let commits = [];
 
 	fetch(`https://api.github.com/repos/CodeChefVit/${repo}`, {
 		method: "get",
@@ -68,9 +68,6 @@ router.post("/add", async (req, res) => {
 		});
 
 	const github = `https://github.com/CodeChefVit/${repo}`;
-	const response = await fetch(
-		`https://api.github.com/repos/CodeChefVIT/${repo}/commits`
-	);
 
 	const data = await response.json();
 	for (var i = 0; i < data.length; i++) {
@@ -87,9 +84,9 @@ router.post("/add", async (req, res) => {
 		timeline: { start, review1, review2, review3 },
 		ideaBy,
 		//		tags,
-		commits,
+
 		repo,
-		//team,
+		team,
 	});
 	project.save().then((result) => {
 		res.status(201).json({
@@ -116,8 +113,12 @@ router.delete("/delete", checkAuth, checkAuthMod, async (req, res) => {
 
 router.get("/:projectId", async (req, res) => {
 	Project.findById(req.params.projectId)
-		.then((project) => {
-			res.status(200).json({ result });
+		.then(async (project) => {
+			const repo = project.repo;
+			const response = await fetch(
+				`https://api.github.com/repos/CodeChefVIT/${repo}/commits`
+			);
+			res.status(200).json({ project, commit: response });
 		})
 		.catch((err) => res.status(400).json({ error: err.toString() }));
 });
@@ -227,6 +228,7 @@ router.get("/commits/:projectId", async (req, res) => {
 router.post("/:projectId/reminder", async (req, res) => {
 	const recipientEmails = [];
 	const recipientNames = [];
+	const message = req.body.message;
 	Project.findById(req.params.projectId)
 		.then((project) => {
 			for (var i = 0; i < project.team.length; i++) {
@@ -265,6 +267,7 @@ router.post("/:projectId/reminder", async (req, res) => {
 			html: `
 					<h1>${recipientNames[i]}</h1>
 					<h2>Reminder for the project bitch</h2>
+					${message}
                   `,
 		};
 		try {

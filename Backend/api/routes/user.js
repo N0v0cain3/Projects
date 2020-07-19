@@ -51,6 +51,20 @@ router.patch("/checkmod", checkAuth, async (req, res) => {
 	}
 });
 
+router.patch("/details", checkAuth, async (req, res) => {
+	User.updateOne({ _id: req.user.userId }, { $set: { reg: req.body.reg } })
+		.then((result) => {
+			res.status(200).json({
+				message: "RegNo added",
+			});
+		})
+		.catch((err) => {
+			res.status(500).json({
+				error: err.toString(),
+			});
+		});
+});
+
 router.get("/", async (req, res) => {
 	res.status(200).json({
 		message: "ez",

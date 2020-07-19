@@ -22,8 +22,8 @@ const userSchema = mongoose.Schema({
 		default: false,
 	},
 	reg: {
-		type: Number,
-		default: 0,
+		type: String,
+		default: "NA",
 	},
 });
 
