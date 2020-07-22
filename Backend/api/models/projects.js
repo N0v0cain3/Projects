@@ -37,6 +37,10 @@ const projectSchema = mongoose.Schema({
 		},
 	],
 	notification: { type: Number },
+	photo: {
+		type: String,
+		default: "https://www.codechefvit.com/assets/images/logos/ccwhite.png"
+	}
 });
 
 module.exports = mongoose.model("Project", projectSchema);

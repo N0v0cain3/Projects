@@ -13,6 +13,7 @@ const checkAuthMod = require("../middleware/checkAuthMod");
 const checkAuthCC = require("../middleware/checkAuthCC");
 const projects = require("../models/projects");
 const router = express.Router();
+const upload = require("../middleware/s3UploadClient")
 require("dotenv").config();
 
 router.get("/", async (req, res) => {
@@ -41,12 +42,36 @@ router.get("/", async (req, res) => {
 	//
 });
 
+router.post(
+	"/photo",
+	upload.single("photo"),
+	async (req, res) => {
+		//checkAuth
+		console.log(req.file.location);
+		const photo = req.file.location;
+		await Project.updateOne(
+			{ _id: req.body.projectId },
+			{
+				$set: { photo: req.file.location },
+			}
+		)
+			.then(async (result) => {
+				res.status(201).json({
+					message: "Created photo",
+					url: photo,
+				});
+			})
+			.catch((err) => {
+				throw err;
+			});
+	}
+);
+
 router.post("/add", async (req, res) => {
 	//checkAuth checkAuthMod
 	const title = req.body.title;
 	const team = req.body.team;
 	const ideaBy = req.body.ideaBy;
-	//const description = req.body.description;
 	const mentors = req.body.mentors;
 	const start = req.body.start;
 	const review1 = req.body.review1;
@@ -54,6 +79,7 @@ router.post("/add", async (req, res) => {
 	const review3 = req.body.review3;
 	const repo = req.body.repo;
 	//const tags = req.body.tags;
+
 
 	fetch(`https://api.github.com/repos/CodeChefVit/${repo}`, {
 		method: "get",
