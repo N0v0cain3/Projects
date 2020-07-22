@@ -12,6 +12,7 @@ const userRoutes = require("./api/routes/user");
 const authRoutes = require("./api/routes/auth");
 const ideaRoutes = require("./api/routes/ideas");
 const projectRoutes = require("./api/routes/projects");
+const commandRoutes = require("./api/routes/commands")
 //===============Database========================
 const dbURI = process.env.mongoUrl;
 
@@ -37,6 +38,7 @@ app.use("/user", userRoutes);
 app.use("/auth", authRoutes);
 app.use("/projects", projectRoutes);
 app.use("/idea", ideaRoutes);
+app.use("/commands", commandRoutes);
 //=========================================
 
 app.use((req, res, next) => {

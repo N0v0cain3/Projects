@@ -83,7 +83,8 @@ router.post("/add", async (req, res) => {
 	const review2 = req.body.review2;
 	const review3 = req.body.review3;
 	const repo = req.body.repo;
-
+	//let commits = []
+	let description
 
 	fetch(`https://api.github.com/repos/CodeChefVIT/${repo}/topics`, {
 		method: "get",
@@ -117,12 +118,15 @@ router.post("/add", async (req, res) => {
 		});
 
 	const github = `https://github.com/CodeChefVit/${repo}`;
+	// const response = await fetch(
+	// 	`https://api.github.com/repos/CodeChefVIT/${repo}/commits`
+	// );
 
-	const data = await response.json();
-	for (var i = 0; i < data.length; i++) {
-		console.log(data[i].commit.message);
-		commits.push(data[i].commit.message);
-	}
+	// const data = await response.json();
+	// for (var i = 0; i < data.length; i++) {
+	// 	console.log(data[i].commit.message);
+	// 	commits.push(data[i].commit.message);
+	// }
 
 	const project = new Project({
 		_id: new mongoose.Types.ObjectId(),
@@ -162,11 +166,17 @@ router.delete("/delete", checkAuth, checkAuthMod, async (req, res) => {
 router.get("/:projectId", async (req, res) => {
 	Project.findById(req.params.projectId)
 		.then(async (project) => {
+			let commits = []
 			const repo = project.repo;
 			const response = await fetch(
 				`https://api.github.com/repos/CodeChefVIT/${repo}/commits`
 			);
-			res.status(200).json({ project, commit: response });
+			const data = await response.json();
+			for (var i = 0; i < data.length; i++) {
+				console.log(data[i].commit.message);
+				commits.push(data[i].commit.message);
+			}
+			res.status(200).json({ project, commits });
 		})
 		.catch((err) => res.status(400).json({ error: err.toString() }));
 });
