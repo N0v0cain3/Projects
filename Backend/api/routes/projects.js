@@ -71,6 +71,15 @@ router.get("/", async (req, res) => {
 // 			});
 // 	}
 // );
+router.get("/all", async (req, res) => {
+	Project.find()
+
+		.then((result) => {
+			res.status(200).json({ result });
+		})
+		.catch((err) => res.status(400).json({ error: err.toString() }));
+});
+
 
 router.post("/add", async (req, res) => {
 	//checkAuth checkAuthMod
@@ -85,6 +94,7 @@ router.post("/add", async (req, res) => {
 	const repo = req.body.repo;
 	//let commits = []
 	let description
+	let tags = []
 
 	fetch(`https://api.github.com/repos/CodeChefVIT/${repo}/topics`, {
 		method: "get",
@@ -96,61 +106,73 @@ router.post("/add", async (req, res) => {
 		},
 	})
 		.then((res) => res.json())
-		.then((json) => {
+		.then(async (json) => {
+			for (var i = 0; i < json.names.length; i++) {
+				//tags.push(json.names[i])
+			}
+			tags = json.names
 
-			tags = json.names;
-			console.log(tags);
+			//console.log(tags);
+
+		}).then(() => {
+			console.log(tags)
+			fetch(`https://api.github.com/repos/CodeChefVit/${repo}`, {
+				method: "get",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `${process.env.githubCCBot}`,
+				},
+			})
+				.then((res) => res.json())
+				.then((json) => {
+					description = json.description;
+
+				}).then(() => {
+					console.log(description)
+
+					const github = `https://github.com/CodeChefVit/${repo}`;
+
+
+					const project = new Project({
+						_id: new mongoose.Types.ObjectId(),
+						title,
+						description,
+						mentors,
+						github,
+						timeline: { start, review1, review2, review3 },
+						ideaBy,
+						tags,
+						repo,
+						team,
+					});
+					project.save().then((result) => {
+						res.status(201).json({
+							message: "Project Created",
+							projectDetails: {
+								_id: result._id,
+								title: result.title,
+								desc: result.description,
+								repo: result.repo,
+							},
+						});
+					}).catch((err) => {
+						res.status(400).json({
+							error: err.toString()
+						})
+					})
+
+				}).catch((err) => {
+					res.status(400).json({
+						error: err.toString()
+					})
+				})
+
 
 		});
 
 
 
-	fetch(`https://api.github.com/repos/CodeChefVit/${repo}`, {
-		method: "get",
-		headers: {
-			"Content-Type": "application/json",
-			Authorization: `${process.env.githubCCBot}`,
-		},
-	})
-		.then((res) => res.json())
-		.then((json) => {
-			description = json.description;
-		});
 
-	const github = `https://github.com/CodeChefVit/${repo}`;
-	// const response = await fetch(
-	// 	`https://api.github.com/repos/CodeChefVIT/${repo}/commits`
-	// );
-
-	// const data = await response.json();
-	// for (var i = 0; i < data.length; i++) {
-	// 	console.log(data[i].commit.message);
-	// 	commits.push(data[i].commit.message);
-	// }
-
-	const project = new Project({
-		_id: new mongoose.Types.ObjectId(),
-		title,
-		description,
-		mentors,
-		github,
-		timeline: { start, review1, review2, review3 },
-		ideaBy,
-		tags,
-		repo,
-		team,
-	});
-	project.save().then((result) => {
-		res.status(201).json({
-			message: "Project Created",
-			projectDetails: {
-				_id: result._id,
-				title: result.title,
-				desc: result.description,
-				repo: result.repo,
-			},
-		});
-	});
 });
 
 router.delete("/delete", checkAuth, checkAuthMod, async (req, res) => {
@@ -265,14 +287,6 @@ router.get("/:projectId/mentors", async (rew, res) => {
 		.catch((err) => res.status(400).json({ error: err.toString() }));
 });
 
-router.get("/all", async (req, res) => {
-	Project.find()
-
-		.then((result) => {
-			res.status(200).json({ result });
-		})
-		.catch((err) => res.status(400).json({ error: err.toString() }));
-});
 
 //update project
 router.patch("/update/:projectId", async (req, res, next) => {
