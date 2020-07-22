@@ -19,7 +19,7 @@ require("dotenv").config();
 router.get("/", async (req, res) => {
 
 	let tags = []
-	fetch(`https://api.github.com/repos/CodeChefVIT/resources/languages`, {
+	fetch(`https://api.github.com/repos/CodeChefVIT/CodeChefVIT20/languages`, {
 		method: "get",
 		headers: {
 			'Accept': 'application/vnd.github.v3+json',
@@ -167,6 +167,35 @@ router.get("/:projectId", async (req, res) => {
 				`https://api.github.com/repos/CodeChefVIT/${repo}/commits`
 			);
 			res.status(200).json({ project, commit: response });
+		})
+		.catch((err) => res.status(400).json({ error: err.toString() }));
+});
+
+
+router.get("/:projectId/languages", async (req, res) => {
+	Project.findById(req.params.projectId)
+		.then(async (project) => {
+			const repo = project.repo;
+
+			fetch(`https://api.github.com/repos/CodeChefVIT/${repo}/languages`, {
+				method: "get",
+				headers: {
+					'Accept': 'application/vnd.github.v3+json',
+					"Content-Type": "application/json",
+					'Authorization': 'Bearer ' + `${process.env.githubCCBot}`
+
+				},
+			})
+				.then((res) => res.json())
+				.then((json) => {
+					//tags = json.names;
+					console.log(json)
+					res.status(200).json({
+						json
+					});
+				});
+
+
 		})
 		.catch((err) => res.status(400).json({ error: err.toString() }));
 });
