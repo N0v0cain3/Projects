@@ -13,22 +13,27 @@ const checkAuthMod = require("../middleware/checkAuthMod");
 const checkAuthCC = require("../middleware/checkAuthCC");
 const projects = require("../models/projects");
 const router = express.Router();
-const upload = require("../middleware/s3UploadClient")
+//	const upload = require("../middleware/s3UploadClient")
 require("dotenv").config();
 
 router.get("/", async (req, res) => {
-	fetch(`https://api.github.com/repos/CodeChefVit/Projects`, {
+
+	let tags = []
+	fetch(`https://api.github.com/repos/CodeChefVIT/resources/languages`, {
 		method: "get",
 		headers: {
+			'Accept': 'application/vnd.github.v3+json',
 			"Content-Type": "application/json",
-			Authorization: `${process.env.githubCCBot}`,
-			"Bearer Token": `${process.env.githubCCBot}`,
+			'Authorization': 'Bearer ' + `${process.env.githubCCBot}`
+
 		},
 	})
 		.then((res) => res.json())
 		.then((json) => {
+			//tags = json.names;
+			console.log(json)
 			res.status(200).json({
-				json,
+				json
 			});
 		});
 
@@ -42,30 +47,30 @@ router.get("/", async (req, res) => {
 	//
 });
 
-router.post(
-	"/photo",
-	upload.single("photo"),
-	async (req, res) => {
-		//checkAuth
-		console.log(req.file.location);
-		const photo = req.file.location;
-		await Project.updateOne(
-			{ _id: req.body.projectId },
-			{
-				$set: { photo: req.file.location },
-			}
-		)
-			.then(async (result) => {
-				res.status(201).json({
-					message: "Created photo",
-					url: photo,
-				});
-			})
-			.catch((err) => {
-				throw err;
-			});
-	}
-);
+// router.post(
+// 	"/photo",
+// 	upload.single("photo"),
+// 	async (req, res) => {
+// 		//checkAuth
+// 		console.log(req.file.location);
+// 		const photo = req.file.location;
+// 		await Project.updateOne(
+// 			{ _id: req.body.projectId },
+// 			{
+// 				$set: { photo: req.file.location },
+// 			}
+// 		)
+// 			.then(async (result) => {
+// 				res.status(201).json({
+// 					message: "Created photo",
+// 					url: photo,
+// 				});
+// 			})
+// 			.catch((err) => {
+// 				throw err;
+// 			});
+// 	}
+// );
 
 router.post("/add", async (req, res) => {
 	//checkAuth checkAuthMod
@@ -78,7 +83,25 @@ router.post("/add", async (req, res) => {
 	const review2 = req.body.review2;
 	const review3 = req.body.review3;
 	const repo = req.body.repo;
-	//const tags = req.body.tags;
+
+
+	fetch(`https://api.github.com/repos/CodeChefVIT/${repo}/topics`, {
+		method: "get",
+		headers: {
+			'Accept': 'application/vnd.github.mercy-preview+json',
+			"Content-Type": "application/json",
+			'Authorization': 'Bearer ' + `${process.env.githubCCBot}`
+
+		},
+	})
+		.then((res) => res.json())
+		.then((json) => {
+
+			tags = json.names;
+			console.log(tags);
+
+		});
+
 
 
 	fetch(`https://api.github.com/repos/CodeChefVit/${repo}`, {
@@ -109,8 +132,7 @@ router.post("/add", async (req, res) => {
 		github,
 		timeline: { start, review1, review2, review3 },
 		ideaBy,
-		//		tags,
-
+		tags,
 		repo,
 		team,
 	});
