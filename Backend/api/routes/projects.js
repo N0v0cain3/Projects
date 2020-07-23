@@ -436,15 +436,17 @@ router.post("/comment", checkAuth, async (req, res) => {
 
 router.get("/:projectId/comments", async (req, res) => {
 	const projectId = req.params.projectId
-	Project.findOne({ _id: projectId }).then((project) => {
-		res.status(200).json({
-			comments: project.comments
+	Project.findOne({ _id: projectId })
+		.populate("comments")
+		.then((project) => {
+			res.status(200).json({
+				comments: project.comments
+			})
+		}).catch((err) => {
+			res.status(500).json({
+				error: err.toString()
+			})
 		})
-	}).catch((err) => {
-		res.status(500).json({
-			error: err.toString()
-		})
-	})
 })
 
 module.exports = router;
