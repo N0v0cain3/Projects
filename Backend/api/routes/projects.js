@@ -11,8 +11,9 @@ const Project = require("../models/projects");
 const checkAuth = require("../middleware/checkAuth");
 const checkAuthMod = require("../middleware/checkAuthMod");
 const checkAuthCC = require("../middleware/checkAuthCC");
-const projects = require("../models/projects");
+const Comment = require("../models/comments");
 const router = express.Router();
+
 //	const upload = require("../middleware/s3UploadClient")
 require("dotenv").config();
 
@@ -71,6 +72,8 @@ router.get("/", async (req, res) => {
 // 			});
 // 	}
 // );
+
+
 router.get("/all", async (req, res) => {
 	Project.find()
 
@@ -107,9 +110,7 @@ router.post("/add", async (req, res) => {
 	})
 		.then((res) => res.json())
 		.then(async (json) => {
-			for (var i = 0; i < json.names.length; i++) {
-				//tags.push(json.names[i])
-			}
+
 			tags = json.names
 
 			//console.log(tags);
@@ -385,5 +386,65 @@ router.post("/:projectId/reminder", async (req, res) => {
 		}
 	}
 });
+
+
+//comments
+
+router.post("/comment", checkAuth, async (req, res) => {
+
+	const comment = new Comment({
+		_id: new mongoose.Types.ObjectId(),
+		by: req.user.userId,
+		text: req.body.text,
+		time: Date.now(),
+		projectId: req.body.projectId,
+		replyTo: req.body.replyTo
+	});
+	comment.save().then((result) => {
+
+		Project.updateOne({ _id: req.body.projectId }, { $push: { comments: result._id } })
+			.then((project) => {
+				res.status(201).json({
+					message: "comment Created",
+					commentDetails: {
+						_id: result._id,
+						by: result.by,
+						text: result.text,
+						time: result.time,
+						projectId: result.projectId,
+						replyTo: result.replyTo
+					},
+				});
+			}).catch((err) => {
+				res.status(500).json({
+					error: err.toString()
+				})
+			})
+
+
+	}).catch((err) => {
+		res.status(400).json({
+			error: err.toString()
+		})
+	})
+
+
+
+})
+
+router.get("/:projectId/comments", async (req, res) => {
+	const projectId = req.params.projectId
+	Project.findOne({ _id: projectId })
+		.populate("comments")
+		.then((project) => {
+			res.status(200).json({
+				comments: project.comments
+			})
+		}).catch((err) => {
+			res.status(500).json({
+				error: err.toString()
+			})
+		})
+})
 
 module.exports = router;

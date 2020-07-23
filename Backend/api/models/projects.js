@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const User = require("./user");
+const Comment = require("./comments")
 const projectSchema = mongoose.Schema({
 	_id: mongoose.Schema.Types.ObjectId,
 	tags: [{ type: String }],
@@ -40,7 +41,14 @@ const projectSchema = mongoose.Schema({
 	photo: {
 		type: String,
 		default: "https://www.codechefvit.com/assets/images/logos/ccwhite.png"
-	}
+	},
+	comments: [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Comment"
+
+		}
+	]
 });
 
 module.exports = mongoose.model("Project", projectSchema);
