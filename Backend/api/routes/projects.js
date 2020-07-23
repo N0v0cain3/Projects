@@ -110,9 +110,7 @@ router.post("/add", async (req, res) => {
 	})
 		.then((res) => res.json())
 		.then(async (json) => {
-			for (var i = 0; i < json.names.length; i++) {
-				//tags.push(json.names[i])
-			}
+
 			tags = json.names
 
 			//console.log(tags);

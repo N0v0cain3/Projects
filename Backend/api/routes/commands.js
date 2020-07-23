@@ -20,6 +20,7 @@ require("dotenv").config();
 
 router.post("/", async (req, res) => {
     title = req.body.title;
+    repo = req.body.repo;
     command = req.body.command;
     await Project.findOne({ title: title }).then((project) => {
         if (command == `delete`) {
@@ -43,7 +44,78 @@ router.post("/", async (req, res) => {
                     message: "Unable to delete comments"
                 })
             })
+        }
+        else if (command == `add project`) {
 
+            fetch(`https://api.github.com/repos/CodeChefVIT/${repo}/topics`, {
+                method: "get",
+                headers: {
+                    'Accept': 'application/vnd.github.mercy-preview+json',
+                    "Content-Type": "application/json",
+                    'Authorization': 'Bearer ' + `${process.env.githubCCBot}`
+
+                },
+            })
+                .then((res) => res.json())
+                .then(async (json) => {
+
+                    tags = json.names
+
+                    //console.log(tags);
+
+                }).then(() => {
+                    console.log(tags)
+                    fetch(`https://api.github.com/repos/CodeChefVit/${repo}`, {
+                        method: "get",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `${process.env.githubCCBot}`,
+                        },
+                    })
+                        .then((res) => res.json())
+                        .then((json) => {
+                            description = json.description;
+
+                        }).then(() => {
+                            console.log(description)
+
+                            const github = `https://github.com/CodeChefVit/${repo}`;
+
+
+                            const project = new Project({
+                                _id: new mongoose.Types.ObjectId(),
+                                description,
+                                github,
+                                tags,
+                                repo,
+
+                            });
+                            project.save().then((result) => {
+                                res.status(201).json({
+                                    message: "Project Created",
+                                    projectDetails: {
+                                        _id: result._id,
+                                        repo: result.repo,
+                                        desc: result.description,
+                                        repo: result.repo,
+                                        topics: result.tags,
+                                        github: result.github
+                                    },
+                                });
+                            }).catch((err) => {
+                                res.status(400).json({
+                                    error: err.toString()
+                                })
+                            })
+
+                        }).catch((err) => {
+                            res.status(400).json({
+                                error: err.toString()
+                            })
+                        })
+
+
+                });
         }
     }).catch((err) => {
         res.status(404).json({
