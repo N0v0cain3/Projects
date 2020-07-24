@@ -64,7 +64,7 @@ router.patch("/update/:ideaId", async (req, res, next) => {
 	const id = req.params.ideaId;
 	var flag = 0;
 
-	Project.updateOne({ _id: id }, { $set: req.body })
+	Idea.updateOne({ _id: id }, { $set: req.body })
 		.exec()
 		.then((result) => {
 			res.status(200).json({
@@ -160,7 +160,7 @@ router.post("/comment", checkAuth, async (req, res) => {
 	comment.save().then((result) => {
 
 		Idea.updateOne({ _id: req.body.ideaId }, { $push: { comments: result._id } })
-			.then((Idea) => {
+			.then(() => {
 				res.status(201).json({
 					message: "comment Created",
 					commentDetails: {
@@ -168,7 +168,7 @@ router.post("/comment", checkAuth, async (req, res) => {
 						by: result.by,
 						text: result.text,
 						time: result.time,
-						projectId: result.projectId,
+						ideaId: result.ideaId,
 						replyTo: result.replyTo
 					},
 				});
