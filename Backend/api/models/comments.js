@@ -22,6 +22,10 @@ const commentSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectID,
         ref: "Project"
     },
+    ideaId: {
+        type: mongoose.Schema.Types.ObjectID,
+        ref: "Idea"
+    }
 
 
 });
