@@ -17,8 +17,8 @@ const router = express.Router();
 //	const upload = require("../middleware/s3UploadClient")
 require("dotenv").config();
 
-
-router.post("/", async (req, res) => {
+//projects
+router.post("/projects", async (req, res) => {
     title = req.body.title;
     repo = req.body.repo;
     command = req.body.command;
@@ -117,9 +117,53 @@ router.post("/", async (req, res) => {
 
                 });
         }
+
     }).catch((err) => {
         res.status(404).json({
             message: "Enter Correct Project title!!"
+        })
+    })
+
+})
+
+
+//ideas
+router.post("/ideas", async (req, res) => {
+    title = req.body.title;
+    command = req.body.command;
+    await Idea.findOne({ title: title }).then((idea) => {
+        if (command == `delete`) {
+            Idea.deleteMany({ title: title })
+                .then((result) => {
+                    res.status(200).json({ message: "Succesfully Deleted" });
+                })
+                .catch((err) => {
+                    res.status(500).json({ error: err.toString() });
+                });
+        }
+
+        else if (command == "/clearall") {
+
+            Comment.deleteMany({ ideaId: idea._id }).then(() => {
+                res.status(202).json({
+                    message: "Deleted"
+                })
+            }).catch((err) => {
+                res.status(500).json({
+                    message: "Unable to delete comments"
+                })
+            })
+        }
+        else {
+            res.status(404).json({
+                message: "Please type a valid command"
+            })
+        }
+
+
+    }).catch((err) => {
+        res.status(404).json({
+            message: "Enter Correct Idea title!!"
         })
     })
 

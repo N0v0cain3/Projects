@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Idea = require("./ideas")
 const userSchema = mongoose.Schema({
 	googleId: { type: String },
 	_id: mongoose.Schema.Types.ObjectId,
@@ -25,6 +26,10 @@ const userSchema = mongoose.Schema({
 		type: String,
 		default: "NA",
 	},
+	vote: [{
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "Idea"
+	}]
 });
 
 module.exports = mongoose.model("User", userSchema);
