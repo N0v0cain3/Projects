@@ -58,6 +58,14 @@ router.get("/all", async (req, res) => {
 		.catch((err) => res.status(400).json({ error: err.toString() }));
 });
 
+router.get("/:ideaId", async (req, res) => {
+	Idea.findById(req.params.ideaId).then((idea) => {
+		res.status(200).json({
+			idea
+		})
+	}).catch((err) => res.status(400).json({ error: err.toString() }));
+})
+
 //update idea
 
 router.patch("/update/:ideaId", async (req, res, next) => {
