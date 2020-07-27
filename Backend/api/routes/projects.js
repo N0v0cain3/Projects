@@ -20,22 +20,32 @@ require("dotenv").config();
 router.get("/", async (req, res) => {
 
 	let tags = []
-	fetch(`https://api.github.com/repos/CodeChefVIT/CodeChefVIT20/languages`, {
-		method: "get",
+	fetch(`https://api.github.com/repos/CodeChefVit/testing`, {
+		method: "delete",
 		headers: {
-			'Accept': 'application/vnd.github.v3+json',
+			// 'Accept': 'application/vnd.github.nebula-preview+json',
 			"Content-Type": "application/json",
 			'Authorization': 'Bearer ' + `${process.env.githubCCBot}`
 
 		},
+		// body: JSON.stringify({
+		// 	name: "tax fraud",
+		// 	description: "sample description",
+		// 	private: false
+		// })
 	})
-		.then((res) => res.json())
-		.then((json) => {
-			//tags = json.names;
-			console.log(json)
-			res.status(200).json({
-				json
-			});
+		.then((result) => res.status(204).json({
+			message: "deleted"
+		}))
+		// .then((json) => {
+		// 	//tags = json.names;
+		// 	console.log(json)
+		// 	res.status(200).json({
+		// 		json
+		// 	});
+		// })
+		.catch((err) => {
+			res.status(500).json({ error: err.toString() })
 		});
 
 	//		issue:json.open_issues_count

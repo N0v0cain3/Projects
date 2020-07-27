@@ -21,6 +21,7 @@ require("dotenv").config();
 router.post("/projects", async (req, res) => {
     title = req.body.title;
     repo = req.body.repo;
+    description = req.body.description;
     command = req.body.command;
     await Project.findOne({ title: title }).then((project) => {
         if (command == `delete`) {
@@ -116,6 +117,67 @@ router.post("/projects", async (req, res) => {
 
 
                 });
+        }
+        else if (command == `git create ${repo}`) {
+            fetch(`https://api.github.com/repos/CodeChefVit/template/generate`, {
+                method: "post",
+                headers: {
+                    'Accept': 'application/vnd.github.baptiste-preview+json',
+                    "Content-Type": "application/json",
+                    'Authorization': 'Bearer ' + `${process.env.githubCCBot}`
+
+                },
+                body: JSON.stringify({
+                    owner: "CodeChefVit",
+                    name: req.body.repo,
+                    description: req.body.description,
+                    private: false
+                })
+            })
+                .then((res) => res.json())
+                .then((json) => {
+                    //tags = json.names;
+                    // console.log(json)
+                    res.status(200).json({
+                        json
+                    });
+                });
+
+        }
+        else if (command == `git remove ${repo}`) {
+            fetch(`https://api.github.com/repos/CodeChefVit/${repo}`, {
+                method: "delete",
+                headers: {
+                    // 'Accept': 'application/vnd.github.nebula-preview+json',
+                    "Content-Type": "application/json",
+                    'Authorization': 'Bearer ' + `${process.env.githubCCBot}`
+
+                },
+                // body: JSON.stringify({
+                // 	name: "tax fraud",
+                // 	description: "sample description",
+                // 	private: false
+                // })
+            })
+                .then((result) => res.status(204).json({
+                    message: "deleted"
+                }))
+                // .then((json) => {
+                // 	//tags = json.names;
+                // 	console.log(json)
+                // 	res.status(200).json({
+                // 		json
+                // 	});
+                // })
+                .catch((err) => {
+                    res.status(404).json({ error: "Repo not found!!" })
+                });
+
+        }
+        else {
+            res.status(404).json({
+                message: "Command Not found!!"
+            })
         }
 
     }).catch((err) => {
