@@ -4,15 +4,15 @@ const bodyParser = require("body-parser");
 var cors = require("cors");
 require("dotenv").config();
 
-const passportSetup = require("./api/config/passportSetupGoogle");
+const passportSetup = require("./Backend/api/config/passportSetupGoogle");
 const passport = require("passport");
 
 const app = express();
-const userRoutes = require("./api/routes/user");
-const authRoutes = require("./api/routes/auth");
-const ideaRoutes = require("./api/routes/ideas");
-const projectRoutes = require("./api/routes/projects");
-const commandRoutes = require("./api/routes/commands")
+const userRoutes = require("./Backend/api/routes/user");
+const authRoutes = require("./Backend/api/routes/auth");
+const ideaRoutes = require("./Backend/api/routes/ideas");
+const projectRoutes = require("./Backend/api/routes/projects");
+const commandRoutes = require("./Backend/api/routes/commands")
 //===============Database========================
 const dbURI = process.env.mongoUrl;
 
