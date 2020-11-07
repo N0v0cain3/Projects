@@ -3,6 +3,10 @@
 	margin: 0;
 	padding: 0;
 }
+ body, html {
+   background-color: #ebecf0;
+}
+
 
  .nav-tabs1 .nav-item {
   margin-bottom: -1px;
@@ -61,7 +65,13 @@
 	left: 50%;
 	top: 300px;
 	transform: translate(-50%, -50%);
+
+
 }
+
+
+
+
 
 .searchbox{
 	transition: border .2s linear;
@@ -96,7 +106,7 @@
 .line{
 position: relative;
  
-	left:40%;
+
 	top: 600px;
 	transform: translate(-50%, -50%);
 }
@@ -370,6 +380,29 @@ border-radius: 12px;
         visibility: visible;
     }
 }
+
+.carousel-indicators{
+
+  position: absolute;
+  right: 0;
+  bottom: 5px;
+  left: 0;
+  z-index: 15;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  padding-left: 0;
+  margin-right: 15%;
+  margin-left: 15%;
+ top: 45%;
+  list-style: none;
+}
+
+
+
 
 .carousel-indicators li {
     display: inline-block;
