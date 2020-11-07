@@ -25,6 +25,9 @@ const projectSchema = mongoose.Schema({
 			default: Date.now() + 30 * 24 * 60 * 60 * 1000,
 		},
 	},
+	domain: {
+		type: String
+	},
 	mentors: [
 		{
 			type: String,
