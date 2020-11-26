@@ -1,6 +1,6 @@
 
 
-const app = document.getElementById('root')
+alert('ey');
 // app.innerHTML = "<b>dwwikdhaidiiwa</b>";
 // app.innerHTML += "<h2>Card Header and Footer</h2>"+
 //         '<div class="card">'+
@@ -52,6 +52,14 @@ const app = document.getElementById('root')
     
 
 //     }
+$.get('https://projects-cc.herokuapp.com/projects/all', function(data,status){
+ for(var i = 0; i<data.result.length; i++) {
+  var node =`<div class="d-flex justify-content-center"> <h1 >"${data.result[i].title}"</h1></div>`
+ 
+  $('#a13').append(node);
+}
+
+})                                                                                                                                    .    
 
 
 //   }
@@ -66,27 +74,13 @@ const app = document.getElementById('root')
 $.get('https://projects-cc.herokuapp.com/projects/all', function(data,status){
   console.log(data)
 
-  document.getElementById("a12").innerHTML = ""
+  
   for(var i = 0; i<data.result.length; i++) {
-    document.getElementById("a12").innerHTML += '<div  class="carousel-item col-12 col-sm-6 col-md-4 col-lg-3 active">'+ '<div>'+ document.createElement("img") + data.result[i].photo +'</div>'
-                           + data.result[i].repo+
-                        '</div>'    
-             console.log("For loop works")
+    var node = `<div id="adit" class="carousel-item col-12 col-sm-6 col-md-4 col-lg-3 active">
+                    				<img src="${data.result[i].photo}" class="img-fluid  mx-auto d-block" alt="img1" style="border-radius:10%;height: 150px; width: 150px;">
+                        </div>`;
+      console.log(node);
+
+ $('#a12').append(node);
   }
 })
-
-$.get('https://projects-cc.herokuapp.com/projects/domain/web', function(data,status){
-  console.log(data)
-
-  document.getElementById("a13").innerHTML = ""
-  for(var i = 0; i<data.result.length; i++) {
-    document.getElementById("a13").innerHTML += '<div  class="carousel-item col-12 col-sm-6 col-md-4 col-lg-3 active">'+ '<div>'+ document.createElement("img") + img.setAttribute("src", data.result[i].photo) +'</div>'
-                           + data.result[i].repo+
-                        '</div>'    
-             console.log("For loop works")
-  }
-})
-
-
-document.getElementById('closed').style.display = "none"
-

@@ -130,7 +130,7 @@ var Terminal = Terminal || function(cmdLineContainer, outputContainer) {
           });          
           break;
         case 'clear':
-
+                       output_.innerHtml ='';
               this.value = '';
           return;
         case 'clock':
