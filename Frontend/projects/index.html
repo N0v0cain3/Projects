@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+	<meta content="utf-8" http-equiv="encoding">
 	<title>
 		Projects cc
 	</title>
@@ -616,7 +618,7 @@ $.get('https://projects-cc.herokuapp.com/projects/all', function(data,status){
 	
 	for(var i = 0; i<data.result.length; i++) {
 	  var node = `<div id="adit" class="carousel-item col-12 col-sm-6 col-md-4 col-lg-3 active">
-									  <button><img src="${data.result[i].photo}" class="img-fluid  mx-auto d-block" alt="img1" style="border-radius:10%;height: 150px; width: 150px;"></button>
+									  <button class="button1"><img src="${data.result[0].photo}" class="img-fluid  mx-auto d-block" alt="img1" style="border-radius:10%;height: 150px; width: 150px;"></button>
 						  </div>`;
 		console.log(node);
   
@@ -625,52 +627,60 @@ $.get('https://projects-cc.herokuapp.com/projects/all', function(data,status){
 	}
   })
   
-
-
+  $( ".button1" ).click(function()  {
+	// $.get('https://projects-cc.herokuapp.com/projects/all', function(data,status){
+	  
+	// 		for(var i = 0; i<data.result.length; i++) {
+			 var node1 =`<div class="d-flex justify-content-center"> <h1 >"babai"</h1></div>`
+			 console.log(node1);
+			 $('#a13').append(node1);
+		 
+		   
+		  }) 
 //TITLE
 
- $.get('https://projects-cc.herokuapp.com/projects/all', function(data,status){
+$.get('https://projects-cc.herokuapp.com/projects/all', function(data,status){
 	  
-	for(var i = 0; i<data.result.length; i++) {
-	 var node1 =`<div class="d-flex justify-content-center"> <h1 >"${data.result[i].title}"</h1></div>`
-	 console.log(node1);
-	 $('#a13').append(node1);
- }
-   
-  })   
+	//	for(var i = 0; i<data.result.length; i++) {
+		 var node1 =`<div class="d-flex justify-content-center"> <h1 >"tubai"</h1></div>`
+		 console.log(node1);
+		 $('#a13').append(node1);
+	 
+	   
+	  })
    
 //DESCRIPTIONS
-//$.get('https://projects-cc.herokuapp.com/projects/all', function(data,status){
+$.get('https://projects-cc.herokuapp.com/projects/all', function(data,status){
 	  
-//	for(var i = 0; i<data.result.length; i++) {
-//	 var node1 =`<div class="d-flex justify-content-center"> <span align="center">"${data.result[i].description}"</span></div>`
-//	 console.log(node1);
-//	 $('#description').append(node1);
- //  }
+	for(var i = 0; i<data.result.length; i++) {
+	 var node1 =`<div class="d-flex justify-content-center"> <span align="center">"${data.result[i].description}"</span></div>`
+	 console.log(node1);
+	 $('#description').append(node1);
+  }
    
-//   })
-   //Mentors
-//   $.get('https://projects-cc.herokuapp.com/projects/all', function(data,status){
+  })
+   // Mentors
+  $.get('https://projects-cc.herokuapp.com/projects/all', function(data,status){
 	  
-//	for(var i = 0; i<data.result.length; i++) {
-//	 var node2 =` <div class="d-flex justify-content-center"><b>Mentors: </b>"${data.result[i].mentors}"</div>`
-//	 console.log(node2);
-//	 $('#Mentors').append(node2);
- //  }
+	for(var i = 0; i<data.result.length; i++) {
+	 var node2 =` <div class="d-flex justify-content-center"><b>Mentors: </b>"${data.result[i].mentors}"</div>`
+	 console.log(node2);
+	 $('#Mentors').append(node2);
+  }
    
-  // })
+  })
   
 //commits
-//$.get('https://projects-cc.herokuapp.com/projects/all', function(data,status){
+$.get('https://projects-cc.herokuapp.com/projects/all', function(data,status){
 	  
-//	for(var i = 0; i<data.result.length; i++) {
-//	 var node2 =` <div class="d-flex justify-content-center">"${data.result[i].commits}"</div>`
-//	 console.log(node2);
-//	 $('.b1').append(node2);
- //  }
+	for(var i = 0; i<data.result.length; i++) {
+	 var node2 =` <div class="d-flex justify-content-center">"${data.result[i].commits}"</div>`
+	 console.log(node2);
+	 $('.b1').append(node2);
+  }
    
-//   })
-  //
+  })
+  
 
 
 
