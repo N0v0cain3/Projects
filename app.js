@@ -8,6 +8,20 @@ const passportSetup = require("./Backend/api/config/passportSetupGoogle");
 const passport = require("passport");
 
 const app = express();
+// Allow CORS
+app.use((req, res, next) => {
+	res.header("Access-Control-Allow-Origin", "*");
+	res.header(
+		"Access-Control-Allow-Headers",
+		"Origin, X-Requested-With, Content-Type, Accept, Authorization, auth-token, On-behalf-of, x-sg-elas-acl"
+	);
+	if (req.method === "OPTIONS") {
+		res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
+		return res.status(200).json({});
+	}
+	next();
+});
+
 app.use(cors());
 const userRoutes = require("./Backend/api/routes/user");
 const authRoutes = require("./Backend/api/routes/auth");
