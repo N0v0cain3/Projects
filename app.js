@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-var cors = require("cors");
+const cors = require("cors");
 require("dotenv").config();
 
 const passportSetup = require("./Backend/api/config/passportSetupGoogle");
