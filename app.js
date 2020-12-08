@@ -8,6 +8,7 @@ const passportSetup = require("./Backend/api/config/passportSetupGoogle");
 const passport = require("passport");
 
 const app = express();
+app.use(cors());
 const userRoutes = require("./Backend/api/routes/user");
 const authRoutes = require("./Backend/api/routes/auth");
 const ideaRoutes = require("./Backend/api/routes/ideas");
@@ -25,7 +26,7 @@ mongoose
 	.then(() => console.log("Database Connected"))
 	.catch((err) => console.log(err));
 //===============================================
-app.use(cors());
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(passport.initialize());
